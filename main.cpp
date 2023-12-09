@@ -1,7 +1,6 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 
-
 struct MazeBlock{
     int index;
     int startX;
@@ -30,20 +29,6 @@ struct MazeBlock{
 
         return *this;
     }
-
-//    std::vector<MazeBlock> getNeighbors(MazeBlock){
-//        std::vector<MazeBlock> neighbors;
-//
-//        neighbors.emplace_back(MazeBlock{startX + width, startY, height, width, olc::WHITE});
-//        neighbors.emplace_back(MazeBlock{startX - width, startY, height, width, olc::WHITE});
-//        neighbors.emplace_back(MazeBlock{startX , startY - height, height, width, olc::WHITE});
-//        neighbors.emplace_back(MazeBlock{startX, startY + height, height, width, olc::WHITE});
-//        neighbors.emplace_back(MazeBlock{startX - width, startY - height, height, width, olc::WHITE});
-//        neighbors.emplace_back(MazeBlock{startX + width, startY - height, height, width, olc::WHITE});
-//        neighbors.emplace_back(MazeBlock{startX - width, startY + height, height, width, olc::WHITE});
-//        neighbors.emplace_back(MazeBlock{startX + width, startY + height, height, width, olc::WHITE});
-//
-//    }
 };
 
 class Maze: public olc::PixelGameEngine{
@@ -121,7 +106,6 @@ public:
         if(bottomLeft < 0 || bottomLeft >= nRows * nCols || (b.index % nRows == nRows - 1 || b.index <= nCols - 1)){}
         else neighborIndex.emplace_back(bottomLeft);
 
-        // probable bug:
         if(left < 0 || left >= nRows * nCols || b.index <= nCols - 1){}
         else neighborIndex.emplace_back(left);
 
@@ -137,8 +121,7 @@ public:
         if(topRight < 0 || topRight >= nRows * nCols || b.index % nRows == 0 || b.index > ((nRows - 1) + ((nCols - 2)* nRows))){}
         else neighborIndex.emplace_back(topRight);
 
-        // probable bug
-        if(topLeft < 0 || topLeft >= nRows * nCols || b.index % nRows == 0 || b.index % nRows == 0){}
+        if(topLeft < 0 || topLeft >= nRows * nCols || b.index % nRows == 0 || b.index % nRows <= nCols - 1){}
         else neighborIndex.emplace_back(topLeft);
 
 
@@ -163,6 +146,7 @@ public:
                 if(cost <= totalCost && blocks[index].background_color != olc::GREEN && blocks[index].background_color != olc::YELLOW){
                     nearestBlock = blocks[index];
                     nearestBlockIndex = index;
+                    totalCost = cost;
                 }
                 if(blocks[index].background_color != olc::RED && blocks[index].background_color != olc::YELLOW){
                     blocks[index].background_color = olc::GREEN;
