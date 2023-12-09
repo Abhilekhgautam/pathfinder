@@ -6,4 +6,4 @@ The main objective of this project is to implement various searching algorithm t
 
 ![Demo](./screenshot.png)
 
-In the above image the yellow blocks are the path traced by the algorithm to reach its destination (in red) from a certain start point (again in red )
+In the above image the yellow blocks are the path traced by the algorithm to reach its destination from a certain start point (in red). The Green blocks are the path explored but not chosen.
