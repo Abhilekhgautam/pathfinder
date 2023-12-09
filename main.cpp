@@ -97,6 +97,8 @@ public:
             fill_color = olc::YELLOW;
         }
         if(GetKey(olc::S).bPressed){
+            // just check if start and end blocks are selected
+            if(start_block.height != 0 && end_block.height != 0)
             searchNearestNeighbor(start_block);
         }
 
@@ -119,7 +121,8 @@ public:
         if(bottomLeft < 0 || bottomLeft >= nRows * nCols || (b.index % nRows == nRows - 1 || b.index <= nCols - 1)){}
         else neighborIndex.emplace_back(bottomLeft);
 
-        if(left < 0 || left >= nRows * nCols || b.index % nRows == 0){}
+        // probable bug:
+        if(left < 0 || left >= nRows * nCols || b.index <= nCols - 1){}
         else neighborIndex.emplace_back(left);
 
         if(right < 0 || right >= nRows * nCols || b.index > ((nRows - 1) + ((nCols - 2)* nRows))){}
@@ -134,6 +137,7 @@ public:
         if(topRight < 0 || topRight >= nRows * nCols || b.index % nRows == 0 || b.index > ((nRows - 1) + ((nCols - 2)* nRows))){}
         else neighborIndex.emplace_back(topRight);
 
+        // probable bug
         if(topLeft < 0 || topLeft >= nRows * nCols || b.index % nRows == 0 || b.index % nRows == 0){}
         else neighborIndex.emplace_back(topLeft);
 
