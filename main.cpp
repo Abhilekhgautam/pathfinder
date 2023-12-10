@@ -40,6 +40,7 @@ private:
     // hard coded, pretty bad :(
     int nRows = 40;
     int nCols = 40;
+    MazeBlock next_block;
 public:
     Maze(){
         sAppName = "Path Finder";
@@ -68,11 +69,14 @@ public:
         if (GetMouse(0).bHeld){
             for(auto& b : blocks){
                 if(GetMouseX() > b.startX  &&  GetMouseY() >  b.startY &&  GetMouseX() < b.startX + b.width &&  GetMouseY() <  b.startY + b.height){
-                    if(start_block.height != 0 and end_block.height != 0) fill_color = olc::YELLOW;
+                    if(start_block.height != 0 and end_block.height != 0) fill_color = olc::CYAN;
 
                     if(start_block.height == 0)
                         start_block = b;
-                    if(b != start_block && end_block.height == 0) end_block = b;
+                    if(b != start_block && end_block.height == 0) {
+                        end_block = b;
+                        next_block = start_block;
+                    }
                     if(b.background_color != olc::RED)
                      b.background_color = fill_color;
                 }
@@ -84,7 +88,7 @@ public:
         if(GetKey(olc::S).bPressed){
             // just check if start and end blocks are selected
             if(start_block.height != 0 && end_block.height != 0)
-            searchNearestNeighbor(start_block);
+              searchNearestNeighbor(next_block);
         }
 
         return true;
@@ -121,40 +125,48 @@ public:
         if(topRight < 0 || topRight >= nRows * nCols || b.index % nRows == 0 || b.index > ((nRows - 1) + ((nCols - 2)* nRows))){}
         else neighborIndex.emplace_back(topRight);
 
-        if(topLeft < 0 || topLeft >= nRows * nCols || b.index % nRows == 0 || b.index % nRows <= nCols - 1){}
+        if(topLeft < 0 || topLeft >= nRows * nCols || b.index % nRows == 0 || b.index <= nCols - 1){}
         else neighborIndex.emplace_back(topLeft);
 
 
         return neighborIndex;
     }
 
-    MazeBlock searchNearestNeighbor(MazeBlock maze){
-        if(maze == end_block) return end_block;
-        else{
+    void searchNearestNeighbor(MazeBlock maze){
+        //if(maze == end_block) return end_block;
+        //else{
 
             std::vector<int> neighbors = getNeighbor(maze);
-            MazeBlock nearestBlock = blocks[neighbors[0]];
 
+            int nearestBlockIndex = -1;
+            int count = 0;
+            while(nearestBlockIndex == -1 && count < neighbors.size()){
+                if(blocks[neighbors[count]].background_color != olc::CYAN){
+                    nearestBlockIndex = neighbors[count];
+                    break;
+                }
+                count++;
+            }
+            if(nearestBlockIndex == -1) return ;
+            MazeBlock nearestBlock = blocks[nearestBlockIndex];
             int distanceFromEndX = abs(end_block.startX - nearestBlock.startX);
             int distanceFromEndY = abs(end_block.startY - nearestBlock.startY);
             int totalCost = distanceFromEndX + distanceFromEndY;
 
-            int nearestBlockIndex = neighbors[0];
-
             for(int index: neighbors){
                 int cost = abs(blocks[index].startX - end_block.startX) + abs(blocks[index].startY - end_block.startY);
-                if(cost <= totalCost && blocks[index].background_color != olc::GREEN && blocks[index].background_color != olc::YELLOW){
-                    nearestBlock = blocks[index];
+                if(blocks[index].background_color != olc::CYAN && cost <= totalCost){
                     nearestBlockIndex = index;
                     totalCost = cost;
                 }
-                if(blocks[index].background_color != olc::RED && blocks[index].background_color != olc::YELLOW){
+                if(blocks[index].background_color != olc::RED && blocks[index].background_color != olc::YELLOW && blocks[index].background_color != olc::CYAN){
                     blocks[index].background_color = olc::GREEN;
                 }
             }
             blocks[start_block.index].background_color = olc::RED;
-            blocks[nearestBlockIndex].background_color = olc::YELLOW;
-            return searchNearestNeighbor(nearestBlock);
+            blocks[nearestBlockIndex].background_color = blocks[nearestBlockIndex].background_color == olc::YELLOW ? olc::BLUE: olc::YELLOW;
+            next_block = blocks[nearestBlockIndex];
+            //return searchNearestNeighbor(nearestBlock);
         }
 
 
@@ -167,7 +179,7 @@ public:
         // startX - width, startY + height
         // startX + width, startY + height
 
-    }
+    //}
 };
 
 int main() {
